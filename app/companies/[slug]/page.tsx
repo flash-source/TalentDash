@@ -24,7 +24,7 @@ interface SalaryRecord {
 export async function generateStaticParams() {
   try {
     const companies = await prisma.company.findMany({ select: { slug: true } });
-    return companies.map((c) => ({ slug: c.slug }));
+    return companies.map((c: { slug: string }) => ({ slug: c.slug }));
   } catch {
     return [];
   }
