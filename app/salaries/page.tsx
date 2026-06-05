@@ -30,7 +30,7 @@ async function getSalaries(sp: Record<string, string | string[] | undefined>) {
   const sort     = typeof sp.sort     === "string" ? sp.sort     : "total_comp_desc";
   const page     = Math.max(1, parseInt(typeof sp.page === "string" ? sp.page : "1", 10));
 
-  const where: Record<string, any> = {};
+  const where: Record<string, unknown> = {};
   if (company)  where.company = { normalized_name: { contains: company.toLowerCase(), mode: "insensitive" } };
   if (role)     where.role = { contains: role, mode: "insensitive" };
   if (location) where.location = { contains: location, mode: "insensitive" };
@@ -52,15 +52,15 @@ async function getSalaries(sp: Record<string, string | string[] | undefined>) {
     prisma.salary.findMany({ where, orderBy, skip: (page - 1) * LIMIT, take: LIMIT, include: { company: true } }),
   ]);
 
-  const data: SalaryRecord[] = records.map((r: any) => ({
-    id: r.id, company_id: r.company_id,
-    company_slug: r.company.slug, company_name: r.company.name,
-    role: r.role, level: r.level as never, location: r.location,
-    currency: r.currency as never, experience_years: r.experience_years,
-    base_salary: Number(r.base_salary), bonus: Number(r.bonus),
-    stock: Number(r.stock), total_compensation: Number(r.total_compensation),
-    source: r.source as never, confidence_score: Number(r.confidence_score),
-    is_verified: r.is_verified, submitted_at: r.submitted_at.toISOString(),
+  const data: SalaryRecord[] = records.map((r: unknown) => ({
+    id: (r as { id: string }).id, company_id: (r as { company_id: string }).company_id,
+    company_slug: (r as { company: { slug: string } }).company.slug, company_name: (r as { company: { name: string } }).company.name,
+    role: (r as { role: string }).role, level: (r as { level: string }).level as never, location: (r as { location: string | null }).location || "",
+    currency: (r as { currency: string }).currency as never, experience_years: (r as { experience_years: number }).experience_years,
+    base_salary: Number((r as { base_salary: bigint }).base_salary), bonus: Number((r as { bonus: bigint }).bonus),
+    stock: Number((r as { stock: bigint }).stock), total_compensation: Number((r as { total_compensation: bigint }).total_compensation),
+    source: (r as { source: string }).source as never, confidence_score: Number((r as { confidence_score: number }).confidence_score),
+    is_verified: (r as { is_verified: boolean }).is_verified, submitted_at: (r as { submitted_at: Date }).submitted_at.toISOString(),
   }));
 
   return { data, total, page, totalPages: Math.ceil(total / LIMIT) };

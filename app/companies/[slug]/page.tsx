@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
-import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { formatSalary, median } from "@/lib/salary";
 
