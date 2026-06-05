@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-// @ts-expect-error
+// @ts-expect-error - No types for this package
 import "./globals.css";
 import Link from "next/link";
 import { AnimatedCursor } from "@/components/ui/AnimatedCursor";
