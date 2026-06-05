@@ -67,17 +67,13 @@ const LEVEL_BAR_COLOR: Record<string, string> = {
 export default async function CompanyPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
-  type CompanyWithSalaries = Prisma.CompanyGetPayload<{
-    include: { salaries: { orderBy: { total_compensation: "desc" } } };
-  }>;
-
-  let company: CompanyWithSalaries | null = null;
+  let company = null;
 
   try {
     company = await prisma.company.findUnique({
       where: { slug },
       include: { salaries: { orderBy: { total_compensation: "desc" } } },
-    }) as CompanyWithSalaries | null;
+    });
   } catch { notFound(); }
 
   if (!company) notFound();
