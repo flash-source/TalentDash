@@ -5,7 +5,6 @@ import { SalaryTableRow } from "@/components/features/SalaryTableRow";
 import { SalaryFilters } from "@/components/features/SalaryFilters";
 import { Pagination } from "@/components/ui/Pagination";
 import { DisplayCurrency, SalaryRecord } from "@/types";
-import { Prisma } from "@prisma/client";
 
 export const revalidate = 300;
 
@@ -31,7 +30,7 @@ async function getSalaries(sp: Record<string, string | string[] | undefined>) {
   const sort     = typeof sp.sort     === "string" ? sp.sort     : "total_comp_desc";
   const page     = Math.max(1, parseInt(typeof sp.page === "string" ? sp.page : "1", 10));
 
-  const where: Prisma.SalaryWhereInput = {};
+  const where: Record<string, any> = {};
   if (company)  where.company = { normalized_name: { contains: company.toLowerCase(), mode: "insensitive" } };
   if (role)     where.role = { contains: role, mode: "insensitive" };
   if (location) where.location = { contains: location, mode: "insensitive" };
@@ -41,7 +40,7 @@ async function getSalaries(sp: Record<string, string | string[] | undefined>) {
     where.level = levels.length === 1 ? (levels[0] as never) : { in: levels as never[] };
   }
 
-  let orderBy: Prisma.SalaryOrderByWithRelationInput;
+  let orderBy: Record<string, "asc" | "desc">;
   switch (sort) {
     case "total_comp_asc": orderBy = { total_compensation: "asc" };  break;
     case "date_desc":      orderBy = { submitted_at: "desc" };       break;
@@ -53,7 +52,7 @@ async function getSalaries(sp: Record<string, string | string[] | undefined>) {
     prisma.salary.findMany({ where, orderBy, skip: (page - 1) * LIMIT, take: LIMIT, include: { company: true } }),
   ]);
 
-  const data: SalaryRecord[] = records.map((r) => ({
+  const data: SalaryRecord[] = records.map((r: any) => ({
     id: r.id, company_id: r.company_id,
     company_slug: r.company.slug, company_name: r.company.name,
     role: r.role, level: r.level as never, location: r.location,
