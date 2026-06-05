@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import type { Prisma } from "@prisma/client";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
@@ -13,7 +12,7 @@ export async function GET(req: NextRequest) {
   const page     = Math.max(1, parseInt(searchParams.get("page")  ?? "1",  10));
   const limit    = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") ?? "25", 10)));
 
-  const where: Prisma.SalaryWhereInput = {};
+  const where: Record<string, unknown> = {};
   if (company)  where.company = { normalized_name: { contains: company.toLowerCase(), mode: "insensitive" } };
   if (role)     where.role = { contains: role, mode: "insensitive" };
   if (location) where.location = { contains: location, mode: "insensitive" };
@@ -23,7 +22,7 @@ export async function GET(req: NextRequest) {
     where.level = levels.length === 1 ? (levels[0] as never) : { in: levels as never[] };
   }
 
-  let orderBy: Prisma.SalaryOrderByWithRelationInput;
+  let orderBy: Record<string, "asc" | "desc">;
   switch (sort) {
     case "total_comp_asc": orderBy = { total_compensation: "asc" };  break;
     case "date_desc":      orderBy = { submitted_at: "desc" };       break;
