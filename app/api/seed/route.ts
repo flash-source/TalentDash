@@ -40,7 +40,9 @@ export async function GET() {
       prisma.company.findMany({ select: { id: true, slug: true } })
     );
     const cm: Record<string, string> = {};
-    for (const c of allCompanies) cm[c.slug] = c.id;
+    for (const c of allCompanies as { id: string; slug: string }[]) {
+      cm[c.slug] = c.id;
+    }
 
     type Row = { slug:string; role:string; level:string; location:string; currency:string; exp:number; base:number; bonus?:number; stock?:number; verified?:boolean; cs?:number; source?:string };
 
