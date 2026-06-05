@@ -79,7 +79,7 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
   if (!company) notFound();
 
   const salaries = company.salaries;
-  const tcValues = salaries.map((s) => Number(s.total_compensation));
+  const tcValues = salaries.map((s: { total_compensation: bigint }) => Number(s.total_compensation));
   const medianTC = median(tcValues);
   const minTC = tcValues.length ? Math.min(...tcValues) : 0;
   const maxTC = tcValues.length ? Math.max(...tcValues) : 0;
